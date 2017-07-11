@@ -33,7 +33,7 @@ double now() {
 	return tv.tv_sec + tv.tv_usec / 1000000.0;
 }
 
-bool parseCommandLine(int argc, cahr* argv[], Options* opt) {
+bool parseCommandLine(int argc, char* argv[], Options* opt) {
 	namespace po = boost::program_options;
 
 	po::options_description desc("Allowed options");
@@ -41,7 +41,7 @@ bool parseCommandLine(int argc, cahr* argv[], Options* opt) {
 		 ("help, h", "Help")
 		 ("port, p", po::value<uint16_t>(&opt->port)->default_value(5001), "TCP port")
 		 ("length, l", po::value<int>(&opt->length)->default_value(65536), "Buffer length")
-		 ("number, n", po:;value<int>(&opt->number)->default_value(8192), "Number of buffers")
+		 ("number, n", po::value<int>(&opt->number)->default_value(8192), "Number of buffers")
 		 ("trans, t", po::value<std::string>(&opt->host), "Transmit")
 		 ("recv, r", "Receive")
 		 ("nodelay, D", "set TCP_NODELAY")
@@ -90,14 +90,14 @@ void transmit(const Options& opt) {
 	TcpStreamPtr stream(TcpStream::connect(addr));
 	// 使用C++移动语义按值返回stream，不用担心拷贝对象
 	if (!stream) {
-		printf("Unable to connect %s\n", addr.toTpPort().c_str());
+		printf("Unable to connect %s\n", addr.toIpPort().c_str());
 		perror("");
 		return;
 	}
 
 	// 设置nagle
 	if (opt.nodelay) {
-		stream->setTcpDelay(true);
+		stream->setTcpNoDelay(true);
 	}
 	printf("connected\n");
 	double start = now();
@@ -105,7 +105,7 @@ void transmit(const Options& opt) {
 	struct SessionMessage sessionMessage = { 0, 0 };
 	sessionMessage.number = htonl(opt.number);
 	sessionMessage.length = htonl(opt.length);
-	if (stream->sendAll(&sessionMessage, seizof(sessionMessage)) != sizefo(sessionMessage)) {
+	if (stream->sendAll(&sessionMessage, sizeof(sessionMessage)) != sizeof(sessionMessage)) {
 		perror("write SessionMessage");
 		return;
 	}
@@ -130,7 +130,7 @@ void transmit(const Options& opt) {
 		assert(nw == total_len);
 
 		int ack = 0;
-		int nr = stream->reveiveAll(&ack, sizeof(ack));
+		int nr = stream->receiveAll(&ack, sizeof(ack));
 		assert(nr == sizeof(ack));
 		ack = ntohl(ack);
 		// 不推荐assert
@@ -139,7 +139,7 @@ void transmit(const Options& opt) {
 
 	// 所用的时间
 	double elapsed = now() - start;
-	printf("%.3f seconds\n%.3f MiB/s\n", elapsed, total_mb / elapsed();;);
+	printf("%.3f seconds\n%.3f MiB/s\n", elapsed, total_mb / elapsed);
 }
 
 void receive(const Options& opt) {
@@ -168,7 +168,7 @@ void receive(const Options& opt) {
 	double start = now();
 	for (int i = 0; i < sessionMessage.number; ++i) {
 		payload->length = 0;
-		if (stream->receiveAll(&payliad->length, sizeof(payload->length)) != sizeof(payload->length)) {
+		if (stream->receiveAll(&payload->length, sizeof(payload->length)) != sizeof(payload->length)) {
 			perror("read length");
 			return;
 		}
@@ -178,7 +178,7 @@ void receive(const Options& opt) {
 			perror("read payload data");
 			return;
 		}
-		int32_t ack = htonl(payload_>length);
+		int32_t ack = htonl(payload->length);
 		if (stream->sendAll(&ack, sizeof(ack)) != sizeof(ack)) {
 			perror("write ack");
 			return;
