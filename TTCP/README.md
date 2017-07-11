@@ -1,4 +1,4 @@
-# 实现TTCP测试网络性能
+# TTCP测试网络性能C++实现
 
 ## 性能指标
 
@@ -18,7 +18,7 @@ netcat 测试很纯，不需要分包等操作
 
 ## TTCP特点
 
-*使用基本的sockets APIs
+* 使用基本的sockets APIs
 
 * 协议为binary格式
 
