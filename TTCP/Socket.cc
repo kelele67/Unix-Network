@@ -20,7 +20,7 @@ namespace {
 	}
 }
 
-Socket::Socket(int socket) : sockfd_(sockfd) {
+Socket::Socket(int sockfd) : sockfd_(sockfd) {
 	assert(sockfd_ >= 0);
 }
 
@@ -31,7 +31,7 @@ Socket::~Socket() {
 	}
 }
 
-void Socket::bindOrDie(const InetADDress& addr) {
+void Socket::bindOrDie(const InetAddress& addr) {
 	const struct sockaddr_in& saddr = addr.getSockAddrInet();
 	int ret = ::bind(sockfd_, sockaddr_cast(&saddr), sizeof(saddr));
 	if (ret) {
@@ -88,7 +88,7 @@ InetAddress Socket::getPeerAddr() const {
 	bzero(&peeraddr, sizeof peeraddr);
 	socklen_t addrlen = static_cast<socklen_t>(sizeof(peeraddr));
 	if (::getpeername(sockfd_, sockaddr_cast(&peeraddr), &addrlen) < 0) {
-		peeror("Socket::getPeerAddr");
+		perror("Socket::getPeerAddr");
 	}
 	return InetAddress(peeraddr);
 }
@@ -97,7 +97,7 @@ int Socket::read(void* buf, int len) {
 	return ::read(sockfd_, buf, len);
 }
 
-int Socket::write(void* buf, int len) {
+int Socket::write(const void* buf, int len) {
 	return ::write(sockfd_, buf, len);
 }
 

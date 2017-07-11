@@ -42,7 +42,7 @@ public:
 	void shutdownWrite();
 
 	void setReuseAddr(bool on);
-	void setTcpNoDeplay(bool on);
+	void setTcpNoDelay(bool on);
 
 	InetAddress getLocalAddr() const;
 	InetAddress getPeerAddr() const;

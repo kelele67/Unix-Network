@@ -21,7 +21,7 @@ std::string InetAddress::toIp() const {
 
 std::string InetAddress::toIpPort() const {
 	char buf[32] = ""; // "255.255.255.255:65535" 4*4+5+1 = 22
-	::inet_ntop(AF_INET, &addr_.sin_addr, buf, sizeof(buf));
+	::inet_ntop(AF_INET, &saddr_.sin_addr, buf, sizeof(buf));
 	int end = ::strlen(buf);
 	uint16_t port = portHostEndian();
 	snprintf(buf + end, sizeof buf - end, ":%u", port);

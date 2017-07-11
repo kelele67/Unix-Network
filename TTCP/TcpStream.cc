@@ -76,7 +76,7 @@ TcpStreamPtr TcpStream::connectInternal(const InetAddress& serverAddr, const Ine
 	if (localAddr) {
 		sock.bindOrDie(*localAddr);
 	}
-	if (sock.connect(serverAddr) == 0 && !isSelefConnection(sock)) {
+	if (sock.connect(serverAddr) == 0 && !isSelfConnection(sock)) {
 		stream.reset(new TcpStream(std::move(sock)));
 	}
 	return stream;
