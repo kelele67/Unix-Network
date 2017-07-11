@@ -14,7 +14,7 @@ public:
 	explicit InetAddress(StringArg ipPort); // "1.2.3.4:5678"
 	explicit InetAddress(uint16_t port, bool loopbackOnly = false); // for listening
 
-	explicit InetAddress(const struct sockaddr_in& saddr) : saddr_(saddr_) {}
+	explicit InetAddress(const struct sockaddr_in& saddr) : saddr_(saddr) { }
 
 	// default copy/asignment are Okay
 	std::string toIp() const;
