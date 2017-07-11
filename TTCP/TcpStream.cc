@@ -35,7 +35,7 @@ int TcpStream::receiveSome(void* buf, int len) {
 int TcpStream::sendAll(const void* buf, int len) {
 	int written = 0;
 	while (written < len) {
-		int nw = sock.write(static_cast<const char*>(buf) + written, len - written);
+		int nw = sock_.write(static_cast<const char*>(buf) + written, len - written);
 		if (nw > 0) {
 			written += nw;
 		}

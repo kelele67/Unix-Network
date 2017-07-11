@@ -23,7 +23,7 @@ public:
 	const struct sockaddr_in& getSockAddrInet() const { return saddr_; }
 	void setSockAddrInet(const struct sockaddr_in& saddr) { saddr_ = saddr; }
 
-	void setPort(uint16_t port_) { saddr_.sin_port = htons(port); }
+	void setPort(uint16_t port) { saddr_.sin_port = htons(port); }
 
 	uint32_t ipNetEndian() const { return saddr_.sin_addr.s_addr; }
 	uint16_t portNetEndian() const { return saddr_.sin_port; }
@@ -38,8 +38,8 @@ public:
 	static std::vector<InetAddress> resolveAll(StringArg hostname, uint16_t port = 0);
 
 	bool operator==(const InetAddress& rhs) const {
-		return saddr.sin_family == rhs.saddr_.sin_family
-			&& ipNetEndian() == rhs.ioNetEndian()
+		return saddr_.sin_family == rhs.saddr_.sin_family
+			&& ipNetEndian() == rhs.ipNetEndian()
 			&& portNetEndian() == rhs.portNetEndian();
 	}
 

@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 
 InetAddress::InetAddress(uint16_t port, bool loopbackOnly) {
-	::bzero(&addr_, sizeof(saddr_));
+	::bzero(&saddr_, sizeof(saddr_));
 	saddr_.sin_family = AF_INET;
 	saddr_.sin_addr.s_addr = htonl(loopbackOnly ? INADDR_LOOPBACK : INADDR_ANY);
 	saddr_.sin_port = htons(port);
@@ -15,11 +15,11 @@ InetAddress::InetAddress(uint16_t port, bool loopbackOnly) {
 
 std::string InetAddress::toIp() const {
 	char buf[32] = "";
-	::inet_ntop(AF_INET, &saddr.sin_addr, buf, sizeof(buf));
+	::inet_ntop(AF_INET, &saddr_.sin_addr, buf, sizeof(buf));
 	return buf;
 }
 
-std::string InetAddress::tpIpPort() const {
+std::string InetAddress::toIpPort() const {
 	char buf[32] = ""; // "255.255.255.255:65535" 4*4+5+1 = 22
 	::inet_ntop(AF_INET, &addr_.sin_addr, buf, sizeof(buf));
 	int end = ::strlen(buf);
@@ -40,7 +40,7 @@ bool InetAddress::resolveSlow(const char* hostname, InetAddress* out) {
 
 	// 64 kb 
 	while (buf.size() <= 16 * kResolveBufSize) {
-		int ret = gethostbyname_t(hostname, &hent, buf.data(), buf.size(), &he, &herrno);
+		int ret = gethostbyname_r(hostname, &hent, buf.data(), buf.size(), &he, &herrno);
 		if (ret == 0 && he != NULL) {
 			assert(he->h_addrtype == AF_INET && he->h_length == sizeof(uint32_t));
 			out->saddr_.sin_addr = *reinterpret_cast<struct in_addr*>(he->h_addr);
@@ -66,10 +66,10 @@ bool InetAddress::resolve(StringArg hostname, InetAddress* out) {
 	int herrno = 0;
 	bzero(&hent, sizeof(hent));
 
-	int ret = gethostbyname_t(hostname.c_str(), &hent, buf, sizeof(buf), &he, &herrno);
+	int ret = gethostbyname_r(hostname.c_str(), &hent, buf, sizeof(buf), &he, &herrno);
 	if (ret == 0 && he != NULL) {
 		assert(he->h_addrtype == AF_INET && he->h_length == sizeof(uint32_t));
-		out->saddr_sin_addr = *reinterpret_cast<struct in_addr*>(he_>h_addr);
+		out->saddr_.sin_addr = *reinterpret_cast<struct in_addr*>(he->h_addr);
 		return true;
 	}
 	else if (ret == ERANGE) {

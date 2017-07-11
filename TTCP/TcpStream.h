@@ -33,7 +33,7 @@ public:
 	void shutdownWrite();
 
 private:
-	static TcpStreamPtr connectInternal(const InetAddress& serverAddr, const InetAddress& localAddr);
+	static TcpStreamPtr connectInternal(const InetAddress& serverAddr, const InetAddress* localAddr);
 	Socket sock_;
 };
 
