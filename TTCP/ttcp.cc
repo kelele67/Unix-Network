@@ -85,7 +85,7 @@ void transmit(const Options& opt) {
 		return;
 	}
 
-	printf("connecting to %s\n". addr.toIpPort().c_str());
+	printf("connecting to %s\n", addr.toIpPort().c_str());
 	// 连接，离开作用域会自动关闭连接 RAII基本手法
 	TcpStreamPtr stream(TcpStream::connect(addr));
 	// 使用C++移动语义按值返回stream，不用担心拷贝对象
