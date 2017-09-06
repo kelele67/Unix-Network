@@ -55,9 +55,9 @@ def request(target, httpsproxy=None, useragent=None):
     try:
         result = urllib2.urlopen(request).read()
     except urllib2.HTTPError, e:
-        print "Error" + e.code
+        print "Error" + str(e.code)
     except urllib2.URLError, e:
-        print "Error" + e.args
+        print "Error" + str(e.args)
 
     obj = json.loads(result)
     return obj
